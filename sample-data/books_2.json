@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Animal Farm",
+    "author": "George Orwell",
+    "year_published": 1945,
+    "genres": "Political Satire"
+  },
+  {
+    "title": "Macbeth",
+    "author": "William Shakespeare",
+    "year_published": 1606,
+    "genres": "Tragedy"
+  },
+  {
+    "title": "Sense and Sensibility",
+    "author": "Jane Austen",
+    "year_published": 1811,
+    "genres": "Romance, Drama"
+  }
+]
