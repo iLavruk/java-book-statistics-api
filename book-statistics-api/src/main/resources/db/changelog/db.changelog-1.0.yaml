@@ -1,0 +1,102 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: codex
+      changes:
+        - createTable:
+            tableName: authors
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+        - createIndex:
+            indexName: idx_authors_name
+            tableName: authors
+            columns:
+              - column:
+                  name: name
+  - changeSet:
+      id: 2
+      author: codex
+      changes:
+        - createTable:
+            tableName: books
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: year_published
+                  type: int
+              - column:
+                  name: genres
+                  type: text
+              - column:
+                  name: author_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: books
+            baseColumnNames: author_id
+            constraintName: fk_books_author
+            referencedTableName: authors
+            referencedColumnNames: id
+            onDelete: restrict
+        - createIndex:
+            indexName: idx_books_author
+            tableName: books
+            columns:
+              - column:
+                  name: author_id
+        - createIndex:
+            indexName: idx_books_year
+            tableName: books
+            columns:
+              - column:
+                  name: year_published
+        - createIndex:
+            indexName: idx_books_title
+            tableName: books
+            columns:
+              - column:
+                  name: title
+  - changeSet:
+      id: 3
+      author: codex
+      changes:
+        - insert:
+            tableName: authors
+            columns:
+              - column:
+                  name: name
+                  value: George Orwell
+        - insert:
+            tableName: authors
+            columns:
+              - column:
+                  name: name
+                  value: Jane Austen
+        - insert:
+            tableName: authors
+            columns:
+              - column:
+                  name: name
+                  value: William Shakespeare
