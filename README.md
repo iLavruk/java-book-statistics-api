@@ -5,6 +5,7 @@ Spring Boot сервіс для керування книгами (entity1) та
 ## Швидкий старт
 - Запуск: `mvn spring-boot:run`
 - Тести (SpringBootTest + Testcontainers PostgreSQL): `mvn test`
+- Примітка щодо тестів: інтеграційні тести піднімають PostgreSQL через Testcontainers і автоматично скіпаються, якщо Docker недоступний (анотація `@Testcontainers(disabledWithoutDocker = true)`). Для повного прогону запустіть Docker і повторіть `mvn test`.
 - Конфіг БД: `src/main/resources/application.yml` (за замовчуванням postgres/postgres на localhost:5432/bookstats)
 - Міграції: `src/main/resources/db/changelog/db.changelog-master.yaml` (створення схем та початкові автори)
 
