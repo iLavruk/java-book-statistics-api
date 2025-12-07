@@ -3,6 +3,8 @@ package com.profitsoft.bookstats.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.profitsoft.bookstats.IntegrationTestBase;
 import com.profitsoft.bookstats.dto.AuthorRequest;
+import com.profitsoft.bookstats.dto.BookRequest;
+import com.profitsoft.bookstats.repository.AuthorRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,6 +28,9 @@ class AuthorControllerIT extends IntegrationTestBase {
 
   @Autowired
   private ObjectMapper objectMapper;
+
+  @Autowired
+  private AuthorRepository authorRepository;
 
   @Test
   void shouldListSeededAuthors() throws Exception {
@@ -69,6 +74,37 @@ class AuthorControllerIT extends IntegrationTestBase {
     mockMvc.perform(post("/api/authors")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isConflict());
+  }
+
+  @Test
+  void shouldRejectInvalidAuthorRequest() throws Exception {
+    AuthorRequest request = new AuthorRequest();
+    request.setName(" ");
+
+    mockMvc.perform(post("/api/authors")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void shouldFailToDeleteAuthorWithBooks() throws Exception {
+    long authorId = authorRepository.findByNameIgnoreCase("George Orwell")
+        .orElseThrow()
+        .getId();
+
+    BookRequest book = new BookRequest();
+    book.setTitle("Linked Book");
+    book.setAuthorId(authorId);
+    book.setYearPublished(2000);
+
+    mockMvc.perform(post("/api/books")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(book)))
+        .andExpect(status().isCreated());
+
+    mockMvc.perform(delete("/api/authors/{id}", authorId))
         .andExpect(status().isConflict());
   }
 }
