@@ -6,7 +6,6 @@ import com.profitsoft.bookstats.dto.BookReportRequest;
 import com.profitsoft.bookstats.dto.BookRequest;
 import com.profitsoft.bookstats.dto.BookResponse;
 import com.profitsoft.bookstats.dto.UploadResponse;
-import com.profitsoft.bookstats.mapper.BookMapper;
 import com.profitsoft.bookstats.service.BookService;
 import jakarta.validation.Valid;
 import java.nio.charset.StandardCharsets;
@@ -33,11 +32,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class BookController {
 
   private final BookService bookService;
-  private final BookMapper bookMapper;
 
-  public BookController(BookService bookService, BookMapper bookMapper) {
+  public BookController(BookService bookService) {
     this.bookService = bookService;
-    this.bookMapper = bookMapper;
   }
 
   @PostMapping
