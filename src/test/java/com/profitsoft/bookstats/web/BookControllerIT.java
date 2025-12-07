@@ -156,4 +156,56 @@ class BookControllerIT extends IntegrationTestBase {
         .andExpect(jsonPath("$.imported", is(2)))
         .andExpect(jsonPath("$.failed", is(0)));
   }
+
+  @Test
+  void shouldReturn404ForMissingBook() throws Exception {
+    long missingId = 999999L;
+    mockMvc.perform(get("/api/books/{id}", missingId))
+        .andExpect(status().isNotFound());
+
+    BookRequest update = new BookRequest();
+    update.setTitle("Any");
+    update.setAuthorId(1L);
+
+    mockMvc.perform(put("/api/books/{id}", missingId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(update)))
+        .andExpect(status().isNotFound());
+
+    mockMvc.perform(delete("/api/books/{id}", missingId))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldValidateBookRequest() throws Exception {
+    BookRequest invalid = new BookRequest();
+    invalid.setTitle(" "); // blank
+    invalid.setAuthorId(null); // missing
+
+    mockMvc.perform(post("/api/books")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(invalid)))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void shouldCountFailedUploadWhenAuthorMissing() throws Exception {
+    String json = """
+        [
+          {"title":"Bad","author":"Unknown Author","year_published":2000,"genres":"Drama"}
+        ]
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file",
+        "books.json",
+        MediaType.APPLICATION_JSON_VALUE,
+        json.getBytes()
+    );
+
+    mockMvc.perform(multipart("/api/books/upload").file(file))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.imported", is(0)))
+        .andExpect(jsonPath("$.failed", is(1)));
+  }
 }
